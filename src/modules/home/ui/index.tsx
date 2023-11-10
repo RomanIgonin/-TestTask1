@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import * as S from '@src/modules/home/ui/styles';
 import { LOGOUT } from '@src/constants';
 import auth from '@react-native-firebase/auth';
@@ -12,10 +12,12 @@ import {
   PhotosSelector,
 } from '@src/modules/home/store/selectors';
 import Config from 'react-native-config';
-import Loader from '@src/modules/loader/ui';
 import ImageModal from 'react-native-image-modal';
 import { useNetInfo } from '@react-native-community/netinfo';
 import NoConnectionScreen from '@src/modules/noConnection/ui';
+import { NewTodoForm } from '@src/modules/home/ui/components/new-todo-form';
+import { TodoList } from '@src/modules/home/ui/components/todo-list';
+import { Loader } from '@src/modules/loader/ui';
 
 export default function HomeScreen() {
   const dispatch = useAppDispatch();
@@ -28,7 +30,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
     dispatch(getPhotos());
-  }, []);
+  }, [dispatch]);
 
   const onPressLogout = () => {
     auth().signOut();
@@ -64,6 +66,12 @@ export default function HomeScreen() {
     );
   };
 
+  console.log('Home');
+
+  const [Todos, setTodos] = useState<string[]>([]);
+
+  const addTodo = (todo: string) => setTodos(todos => [...todos, todo]);
+
   if (netInfo.isConnected !== true) {
     return <NoConnectionScreen />;
   } else {
@@ -75,6 +83,9 @@ export default function HomeScreen() {
             <S.LogoutBtn source={LOGOUT} />
           </S.LogoutWrapper>
         </S.HeaderWrapper>
+
+        <NewTodoForm addTodo={addTodo} />
+        <TodoList Todos={Todos} />
 
         {isPhotosLoading || photos == null ? (
           <Loader />
