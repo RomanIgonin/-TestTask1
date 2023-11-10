@@ -3,6 +3,7 @@ import axios from 'axios';
 
 class HomeServices {
   public async getPhotos() {
+    console.log('getPhotos');
     return axios
       .get(Config.API_URL)
       .then(response => response.data)
